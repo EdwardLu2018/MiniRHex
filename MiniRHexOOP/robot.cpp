@@ -1,5 +1,4 @@
 #include "robot.h"
-#include "globals.h"
 #include "conversions.h"
 #include "Arduino-compatibles.h"
 #include "usb_serial.h"
@@ -113,7 +112,7 @@ float Robot::pd_calc(float theta_act, float theta_des,
   return kp * dtheta + kd * dv;
 }
 
-void Robot::move() {
+void Robot::update() {
     word packet[packet_length];
 
     // primary for-loop
@@ -170,19 +169,6 @@ void Robot::move() {
             packet[(i-1) * 2 + 1] = V_to_dynV(signed_recovery_speed);
         }
     }
-
-    // SerialUSB.println(packet[0]);
-    // SerialUSB.println(packet[1]);
-    // SerialUSB.println(packet[2]);
-    // SerialUSB.println(packet[3]);
-    // SerialUSB.println(packet[4]);
-    // SerialUSB.println(packet[5]);
-    // SerialUSB.println(packet[6]);
-    // SerialUSB.println(packet[7]);
-    // SerialUSB.println(packet[8]);
-    // SerialUSB.println(packet[9]);
-    // SerialUSB.println(packet[10]);
-    // SerialUSB.println(packet[11]);
 
     Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length); //simultaneously write to each of 6 servoes with updated commands
 }

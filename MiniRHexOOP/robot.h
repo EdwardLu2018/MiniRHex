@@ -42,7 +42,7 @@ class Robot
         int updateGait(Gait gait);
         void jumpReady();
         void jump();
-        void move();
+        void update();
         void checkForBT();
         void printServoPositions();
 

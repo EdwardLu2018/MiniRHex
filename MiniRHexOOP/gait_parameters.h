@@ -18,8 +18,8 @@ struct Gait {
 #define STAND 0
 #define WALK 1
 #define REVERSE 2
-#define RIGHT 3
-#define LEFT 4
+#define LEFT 3
+#define RIGHT 4
 #define PRONK 5
 
 extern Gait all_gaits[TOTAL_GAITS];

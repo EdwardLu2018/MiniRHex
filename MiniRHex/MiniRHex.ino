@@ -4,7 +4,6 @@
 #include "conversions.h"
 #include "pd_control.h"
 #include "gait_parameters.h"
-// #include "gaits.h"
 
 // Dynamixel Setup //
 #define DXL_BUS_SERIAL1 1  //Dynamixel on Serial1(USART1)  <-OpenCM9.04
@@ -25,7 +24,6 @@ float actual_theta;
 float control_signal;
 float actual_p;
 
-int gait_idx = 0;
 
 //Deadzone
 int dead_buffer = 40;
@@ -35,7 +33,7 @@ const int legs_active = 6;
 
 // Packet Setup //
 const int packet_length =  2 * legs_active;
-word packet[packet_length];
+word packet[packet_length]; 
 
 // Button Setup //
 int button_state;
@@ -55,22 +53,20 @@ void setup(){
   int t_start = millis();
   for (int i = 1; i <= legs_active; i++){ //legs stored at their index
     Dxl.wheelMode(legs[i].id); //change servo to wheel mode
-    update_gait(i, gait_idx, t_start); //set initial parameters, initial_gait in gait_parameters
+    update_gait(i, initial_gait, t_start); //set initial parameters, initial_gait in gait_parameters
   }
 }
 
 void user_button_pressed(){
-
+  
   digitalWrite(BOARD_LED_PIN, LOW); //turn led on
   //compute new gait
+  int new_gait = (legs[1].gait + 1) % num_gaits;
   int t_start = millis();
-  gait_idx = (gait_idx + 1) % NUM_GAITS;
-  SerialUSB.println(gait_idx);
   for(int i = 1; i <= legs_active; i++){
-    update_gait(i, gait_idx, t_start);
-    SerialUSB.println(legs[i].right_side);
+    update_gait(i, new_gait, t_start);
   }
-
+  
 }
 
 void user_button_released(){
@@ -78,10 +74,10 @@ void user_button_released(){
 }
 
 void jump_ready(){
-  int t_start = millis();
+  int t_start = millis(); 
   for (int i = 1; i <= legs_active; i++){
     legs[i].desired_theta = 90;
-    update_gait(i, 0, t_start);
+    update_gait(i, STAND, t_start);
   }
   SerialUSB.println("JUMP READY");
 }
@@ -106,8 +102,9 @@ void jump(){
   }
   for (int i = 1; i <= legs_active; i++){
     legs[i].desired_theta = 0;
-    update_gait(i, 0, t_start);
+    update_gait(i, STAND, t_start);
   }
+
 }
 
 int count = 0;
@@ -115,7 +112,7 @@ void loop(){
 
   //time count
   count++;
-
+  
   prev_low_battery = low_battery;
   //Every 100 loop iterations, find max voltage supplied to each leg and compare with nominal
   if (count%10 == 0){
@@ -143,30 +140,29 @@ void loop(){
       Dxl.writeByte(legs[i].id, LED, low_battery);
     }
   }
-
+  
   //bluetooth control
-  if (Serial2.available()){
+  if (Serial2.available()){ 
     char a = (char)(Serial2.read());
-    SerialUSB.println(a);
-    int bt_gait_idx = -1;
+    int gait = -1;
     switch (a){
-    case 'q':
-      bt_gait_idx = 0;
+    case 'q': 
+      gait = STAND; 
       break; //stand
-    case 'w':
-      bt_gait_idx = 1;
+    case 'w': 
+      gait = WALK; 
       break; //forwards
-    case 's':
-      bt_gait_idx = 2;
-      break; //reverse
-    case 'a':
-      bt_gait_idx = 3;
+    case 'a': 
+      gait = LEFT; 
       break; //left
-    case 'd':
-      bt_gait_idx = 4;
-      break; //right
+    case 's': 
+      gait = REVERSE; 
+      break; //reverse
+    case 'd': 
+      gait = RIGHT; 
+      break; //right 
     case 'e':
-      bt_gait_idx = 5;
+      gait = PRONK;
       break;
     case 'x':
       jump_ready();
@@ -176,14 +172,13 @@ void loop(){
       break;
     }
 
-    if (bt_gait_idx != -1){
-      int t_start = millis();
+    if (gait != -1){
+      int t_start = millis(); 
       for (int i = 1; i <= legs_active; i++){
-        update_gait(i, bt_gait_idx, t_start);
+        update_gait(i, gait, t_start);
       }
     }
   }
-
 
   //button control
   button_state = digitalRead(BOARD_BUTTON_PIN);
@@ -199,7 +194,7 @@ void loop(){
     actual_theta = P_to_Theta(actual_p); // converted to degrees, relative to leg
     actual_vel = dynV_to_V(Dxl.readWord(legs[i].id, PRESENT_SPEED)); // converted to degrees/ms, relative to leg
     if (!legs[i].deadzone){
-
+      
       if (actual_p == 0 || actual_p == 1023){ //entering deadzone
         legs[i].deadzone = true;
         if (actual_p == 0) legs[i].dead_from_neg = true;
@@ -207,7 +202,7 @@ void loop(){
         continue;
       }
 
-      if (legs[i].gait.id == 0){ //standing or sitting
+      if (legs[i].gait == STAND){ //standing or sitting
         if (legs[i].right_side){
           desired_theta = Theta_to_ThetaR(legs[i].desired_theta);
         }
@@ -215,7 +210,7 @@ void loop(){
           desired_theta = legs[i].desired_theta;
         }
         actual_theta = actual_theta - legs[i].zero; //zero out leg thetas, accounts for small servo irregularities
-        control_signal = pd_controller(actual_theta, desired_theta, actual_vel, 0, kp_hold, kd_hold);
+        control_signal = pd_controller(actual_theta, desired_theta, actual_vel, 0, kp_hold, kd_hold); 
       }
       else { //walking, turning
         //compute absolute desired values (theta and velocity) from clock time
@@ -230,8 +225,8 @@ void loop(){
           desired_theta = v.global_theta;
         }
         actual_theta = actual_theta - legs[i].zero;
-
-        control_signal = pd_controller(actual_theta, desired_theta, actual_vel, desired_vel, legs[i].kp, legs[i].kd);
+        
+        control_signal = pd_controller(actual_theta, desired_theta, actual_vel, desired_vel, legs[i].kp, legs[i].kd);  
       }
 
 
