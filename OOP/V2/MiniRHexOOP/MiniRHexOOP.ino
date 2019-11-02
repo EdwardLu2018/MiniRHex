@@ -8,8 +8,8 @@ Dynamixel Dxl(DXL_BUS_SERIAL1);
 Robot MiniRHex(&Dxl);
 
 // Button Setup //
-uint8_t button_state;
-uint8_t last_button_state = 0;
+unsigned char button_state;
+unsigned char last_button_state = 0;
 
 void handle_button_press() {
   button_state = digitalRead(BOARD_BUTTON_PIN);
@@ -31,7 +31,7 @@ void setup() {
   pinMode(BOARD_LED_PIN, OUTPUT); // setup LED
 }
 
-uint64_t t = millis();
+unsigned long t = millis();
 void loop() {
   // Every 1000 seconds, find max voltage supplied to each leg and compare with nominal // 
   if (millis() - t > 1000) {

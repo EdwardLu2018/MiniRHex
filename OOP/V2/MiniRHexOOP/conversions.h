@@ -2,9 +2,9 @@
 #define _CONVERSIONS_H
 
 // Inherent to design
-extern const short theta_circle; // theta for one revolution
-extern const short theta_dead; // theta range of deadzone
-extern const short theta_up; // theta of middle of deadzone
+extern const unsigned short theta_circle; // theta for one revolution
+extern const unsigned short theta_dead; // theta range of deadzone
+extern const unsigned short theta_up; // theta of middle of deadzone
 
 // V refers to units used in calculation (degrees per millisecond)
 // dynV refers to command velocity sent to dynamixels (ranges from [0-2048), >1023 is opposite direction)
