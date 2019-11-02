@@ -1,0 +1,47 @@
+#include "robot.h"
+#include <Dynamixel.h>
+
+// Dynamixel Setup //
+#define DXL_BUS_SERIAL1 1  // Dynamixel on Serial1(USART1) <-OpenCM9.04
+Dynamixel Dxl(DXL_BUS_SERIAL1);
+
+Robot MiniRHex(&Dxl);
+
+// Button Setup //
+uint8_t button_state;
+uint8_t last_button_state = 0;
+
+void handle_button_press() {
+  button_state = digitalRead(BOARD_BUTTON_PIN);
+  if (button_state > last_button_state) {
+    digitalWrite(BOARD_LED_PIN, LOW); // turn led on
+    int new_gait_idx = MiniRHex.incrementGait(); // change to next gait
+    Serial.println(new_gait_idx);
+  }
+  else if (button_state < last_button_state) {
+    digitalWrite(BOARD_LED_PIN, HIGH); // turn led off
+  }
+  last_button_state = button_state;
+}
+
+void setup() {
+  MiniRHex.setup();
+  Serial2.begin(57600);
+  pinMode(BOARD_BUTTON_PIN, INPUT_PULLDOWN); // setup user button
+  pinMode(BOARD_LED_PIN, OUTPUT); // setup LED
+}
+
+uint64_t t = millis();
+void loop() {
+  // Every 1000 seconds, find max voltage supplied to each leg and compare with nominal // 
+  if (millis() - t > 1000) {
+    t = millis();
+    MiniRHex.checkBattery();
+  }
+
+  // button control //
+  handle_button_press();
+
+  MiniRHex.update();
+//  MiniRHex.checkForBT();
+}
