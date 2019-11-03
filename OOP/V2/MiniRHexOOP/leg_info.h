@@ -7,6 +7,7 @@ class Leg
 {
   public:
     unsigned char id;
+    unsigned char idx;
     float desired_theta; // only utilized in position control mode
     Gait gait; // current gait
     float zero;
@@ -27,20 +28,19 @@ class Leg
     // Computed from above in internal params
     float recovery_speed;
     float ground_speed;
-    float thetas[4]; //0 through 4
-    float ts[4]; //0 through 4
+    float thetas[4]; // 0 through 4
+    float ts[4]; // 0 through 4
 
-    int global_theta;
-    int global_velocity;
+    float global_theta;
+    float global_velocity;
 
     Leg() {};
-    Leg(unsigned char set_id,
-    float set_desired_theta, Gait set_gait,
-    float set_zero, bool set_right_side,
-    bool set_deadzone, bool set_dead_from_neg);
+    Leg(unsigned char set_id, unsigned char set_idx,
+        float set_desired_theta, Gait set_gait,
+        float set_zero, bool set_right_side,
+        bool set_deadzone, bool set_dead_from_neg);
     ~Leg() {};
     void updateGait(Gait new_gait, int startMillis);
-    void setDesiredTheta(int new_pos);
     void getDesiredVals(int t);
     void getDesiredValsInternal(int t);
 

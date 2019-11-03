@@ -6,7 +6,7 @@ const unsigned short theta_dead = 60; //theta range of deadzone
 const unsigned short theta_up = 180; //theta of middle of deadzone
 
 //VMaxed tuned on xl320, roughly accurate
-float VMax = 0.8; //ratio of degrees per ms to dynamixel speed units
+const float VMax = 0.8; //ratio of degrees per ms to dynamixel speed units
 
 float dynV_to_V(int dynV) {
 	float result = dynV;

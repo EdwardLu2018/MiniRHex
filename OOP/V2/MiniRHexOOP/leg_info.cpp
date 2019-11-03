@@ -3,12 +3,13 @@
 #include "gait_parameters.h"
 #include "conversions.h"
 
-Leg::Leg(unsigned char set_id,
+Leg::Leg(unsigned char set_id, unsigned char set_idx,
          float set_desired_theta, Gait set_gait,
          float set_zero, bool set_right_side,
          bool set_deadzone, bool set_dead_from_neg)
 {
   id = set_id;
+  idx = set_idx;
   desired_theta = set_desired_theta;
   gait = set_gait;
   zero = set_zero;
@@ -21,11 +22,11 @@ Leg::Leg(unsigned char set_id,
 void Leg::updateGait(Gait new_gait, int startMillis)
 {
   gait = new_gait;
-  theta_slow = new_gait.theta_s[id];
-  theta_down = new_gait.theta_d[id];
-  t_c = new_gait.t_cc[id];
-  duty_factor = new_gait.duty_f[id];
-  phase = new_gait.phases[id];
+  theta_slow = new_gait.theta_s[idx];
+  theta_down = new_gait.theta_d[idx];
+  t_c = new_gait.t_cc[idx];
+  duty_factor = new_gait.duty_f[idx];
+  phase = new_gait.phases[idx];
   kp = new_gait.kp;
   kd = new_gait.kd;
   updateGaitInternalParams(startMillis);
@@ -81,21 +82,16 @@ void Leg::updateGaitInternalParams(int startTime)
   recovery_speed = recovery_spd;
 }
 
-void Leg::setDesiredTheta(int new_pos) {
-  desired_theta = new_pos;
-}
-
-void Leg::getDesiredVals(int t) { // handles phasing and start time, user provides get desired vals internal function
+void Leg::getDesiredVals(int t) // handles phasing and start time, user provides get desired vals internal function
+{
   int elapsed_time = t - startMillis;
-
   t = fmodf(elapsed_time + phase * t_c, t_c);
-
   getDesiredValsInternal(t);
 }
 
-
-void Leg::getDesiredValsInternal(int t) { // assume t has been adjusted for phasing
-  int forward = gait.leg_dir[id];
+void Leg::getDesiredValsInternal(int t) // assume t has been adjusted for phasing
+{ 
+  int forward = gait.leg_dir[idx];
   float theta;
   float velocity;
 
@@ -118,8 +114,10 @@ void Leg::getDesiredValsInternal(int t) { // assume t has been adjusted for phas
 
   if (theta < theta_up - theta_circle) theta = theta_circle + theta;
   else if (theta >= theta_up) theta = -theta_circle + theta; // wrap thetas
+  
   theta = theta * forward;
   velocity = velocity * forward;
+  
   global_theta = theta;
   global_velocity = velocity;
 }

@@ -9,7 +9,8 @@
 #define LEFT 3
 #define RIGHT 4
 
-struct Gait {
+struct Gait 
+{
   int id;
   float kp;
   float kd;

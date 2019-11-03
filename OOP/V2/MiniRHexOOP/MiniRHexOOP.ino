@@ -25,7 +25,7 @@ void handle_button_press() {
 }
 
 void setup() {
-  MiniRHex.setup();
+  MiniRHex.startup();
   Serial2.begin(57600);
   pinMode(BOARD_BUTTON_PIN, INPUT_PULLDOWN); // setup user button
   pinMode(BOARD_LED_PIN, OUTPUT); // setup LED

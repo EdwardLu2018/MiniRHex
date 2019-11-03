@@ -21,16 +21,16 @@ class Robot
         unsigned char gait_idx;
 
         // Rewritable globals
-        float desired_vel;
-        float desired_theta;
-        float actual_vel;
-        float actual_theta;
-        float control_signal;
-        float actual_p;
+//        float desired_vel;
+//        float desired_theta;
+//        float actual_vel;
+//        float actual_theta;
+//        float control_signal;
+//        float actual_p;
 
         Robot(Dynamixel * dxl);
         ~Robot() {};
-        void setup();
+        void startup();
         unsigned short checkBattery();
         int incrementGait();
         int updateGait(Gait gait);

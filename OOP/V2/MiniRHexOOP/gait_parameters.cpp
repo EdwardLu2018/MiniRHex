@@ -22,10 +22,10 @@ with a phase of 0 ) (takes decimal values 0-1)
 
 //Leg 1 (Left Front) Parameters:
 const float leg_dutyf = 0.42;
-const float leg_sweep = 40;
-const float leg_down = 20;
-const float leg_phase1 = 0.5;
-const float leg_phase2 = 0;
+const float leg_sweep = 40.0;
+const float leg_down = 20.0;
+const float leg_phase1 = 0.50;
+const float leg_phase2 = 0.0;
 
 // -------------------------------------- //
 
