@@ -1,5 +1,5 @@
-#include "gait_parameters.h"
-#include "leg_info.h"
+#include "gait.h"
+#include "leg.h"
 
 const float kp_walk = 0.03; // 0.02
 const float kd_walk = 1.0;

@@ -1,8 +1,8 @@
 #ifndef _ROBOT_H
 #define _ROBOT_H
 
-#include "gait_parameters.h"
-#include "leg_info.h"
+#include "gait.h"
+#include "leg.h"
 #include <Dynamixel.h>
 
 // Control Table //
@@ -19,14 +19,6 @@ class Robot
         Dynamixel * Dxl;
 
         unsigned char gait_idx;
-
-        // Rewritable globals
-//        float desired_vel;
-//        float desired_theta;
-//        float actual_vel;
-//        float actual_theta;
-//        float control_signal;
-//        float actual_p;
 
         Robot(Dynamixel * dxl);
         ~Robot() {};

@@ -1,6 +1,6 @@
 #include <math.h>
-#include "leg_info.h"
-#include "gait_parameters.h"
+#include "leg.h"
+#include "gait.h"
 #include "conversions.h"
 
 Leg::Leg(unsigned char set_id, unsigned char set_idx,

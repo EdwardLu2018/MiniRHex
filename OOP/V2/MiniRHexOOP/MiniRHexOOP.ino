@@ -43,5 +43,5 @@ void loop() {
   handle_button_press();
 
   MiniRHex.update();
-//  MiniRHex.checkForBT();
+  MiniRHex.checkForBT();
 }

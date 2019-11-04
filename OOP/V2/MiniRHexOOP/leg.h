@@ -1,7 +1,7 @@
 #ifndef _LEG_INFO_H
 #define _LEG_INFO_H
 
-#include "gait_parameters.h"
+#include "gait.h"
 
 class Leg
 {
