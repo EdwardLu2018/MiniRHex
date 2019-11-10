@@ -183,12 +183,15 @@ void Robot::checkForBT()
     case 'e':
       bt_gait_idx = 5;
       break;
-    case 'x':
-      jumpReady();
-      break;
-    case 'j':
-      jump();
-      break;
+    default:
+      bt_gait_idx = 0;
+      break; //stand
+//    case 'x':
+//      jumpReady();
+//      break;
+//    case 'j':
+//      jump();
+//      break;
     }
 
     if (bt_gait_idx != -1) {

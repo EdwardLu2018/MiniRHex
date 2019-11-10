@@ -26,8 +26,8 @@ class Robot
         unsigned short checkBattery();
         int incrementGait();
         int updateGait(Gait gait);
-        void jumpReady();
-        void jump();
+//        void jumpReady();
+//        void jump();
         void update();
         void checkForBT();
         void printServoPositions();
