@@ -133,8 +133,6 @@ void Robot::update()
         control_signal = pd_calc(actual_theta, desired_theta, actual_vel, desired_vel, legs[i].kp, legs[i].kd);
       }
       int new_vel = V_to_dynV(actual_vel + control_signal);
-       if (legs[i].idx == 5)
-          Serial.println(legs[i].desired_theta);
       packet[2*i + 1] = new_vel;
     }
     else { // deadzone
