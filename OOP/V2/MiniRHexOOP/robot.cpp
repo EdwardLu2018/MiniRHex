@@ -19,7 +19,8 @@ void Robot::startup()
   Dxl->begin(3); // baudrate set to 1 Mbps (max)
   unsigned long t_start = millis();
   for (int i = 0; i < legs_active; i++) { // legs stored at their index
-      legs[i].updateGait(stand_gait, t_start); // set initial parameters, initial_gait in gait_parameters
+    legs[i].updateGait(stand_gait, t_start); // set initial parameters, initial_gait in gait_parameters
+    Dxl->writeByte(legs[i].id, 24, 1);
   }
 }
 
@@ -41,19 +42,20 @@ int Robot::updateGait(Gait gait)
 unsigned short Robot::checkBattery() 
 {
   for (int i = 0; i < legs_active; i++) {
-    uint8_t voltage_check = Dxl->getVolt(legs[i].id);
+    float voltage_check = Dxl->getVolt(legs[i].id);
     if (voltage_check > voltage) {
-      voltage = voltage_check;
+      voltage = voltage_check / 10;
     }
   }
   
-  Serial.print("Voltage: ");
-  Serial.println(voltage);
+  Serial.print("Current Voltage: ");
+  Serial.print(voltage);
+  Serial.println("V");
 
-  if (voltage > 73) { // green
+  if (voltage > 7.3) { // green
     low_battery = 2;
   }
-  else if (voltage < 71) { // red
+  else if (voltage < 7.1) { // red
     low_battery = 1;
   }
   else {
@@ -87,11 +89,12 @@ void Robot::update()
 {    
   word packet[packet_length];
 
-  // primary for-loop
+//  Serial.println("hello1");
   for(int i = 0; i < legs_active; i++) {
     packet[2*i] = legs[i].id;
-    
+
     float actual_p = Dxl->readWord(legs[i].id, PRESENT_POS);
+//    if (legs[i].id == 1) Serial.println(actual_p);
     float actual_theta = P_to_Theta(actual_p); // converted to degrees, relative to leg
     float actual_vel = dynV_to_V(Dxl->readWord(legs[i].id, PRESENT_SPEED)); // converted to degrees/ms, relative to leg
 
@@ -144,13 +147,13 @@ void Robot::update()
     }
   }
   
-//  Serial.print("[ ");
-//  for (int i = 0; i < packet_length; i++) {
-//    Serial.print(packet[i]);
-//    Serial.print(" ");
-//  }
-//  Serial.print("]");
-//  Serial.println();
+  Serial.print("[ ");
+  for (int i = 0; i < packet_length; i++) {
+    Serial.print(packet[i]);
+    Serial.print(" ");
+  }
+  Serial.print("]");
+  Serial.println();
   
   Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length); //simultaneously write to each of 6 servoes with updated commands
 }

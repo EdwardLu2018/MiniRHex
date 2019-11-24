@@ -31,6 +31,7 @@ class Robot
         void update();
         void checkForBT();
         void printServoPositions();
+        void stand();
 
     private:
         // Deadzone
@@ -46,7 +47,7 @@ class Robot
         // Battery Check //
         unsigned char low_battery = 1; // 1 = red, 3 = yellow, 2 = green
         unsigned char prev_low_battery = 0;
-        unsigned short voltage;
+        float voltage;
 
         float kp_hold = 0.008;
         float kd_hold = 1.0;

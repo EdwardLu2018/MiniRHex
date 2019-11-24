@@ -32,16 +32,20 @@ void setup() {
 }
 
 unsigned long t = millis();
+unsigned long u_t = millis();
 void loop() {
-  // Every 1000 seconds, find max voltage supplied to each leg and compare with nominal // 
+  // Every second, find max voltage supplied to each leg and compare with nominal // 
   if (millis() - t > 1000) {
     t = millis();
-    MiniRHex.checkBattery();
+//    MiniRHex.checkBattery();
   }
 
   // button control //
   handle_button_press();
 
-  MiniRHex.update();
-  MiniRHex.checkForBT();
+  if (millis() - u_t > 10) {
+    u_t = millis();
+    MiniRHex.update();
+  }
+//  MiniRHex.checkForBT();
 }
