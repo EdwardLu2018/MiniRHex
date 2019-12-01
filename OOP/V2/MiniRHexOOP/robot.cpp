@@ -20,7 +20,6 @@ void Robot::startup()
   unsigned long t_start = millis();
   for (int i = 0; i < legs_active; i++) { // legs stored at their index
     legs[i].updateGait(stand_gait, t_start); // set initial parameters, initial_gait in gait_parameters
-    Dxl->writeByte(legs[i].id, 24, 1);
   }
 }
 
@@ -89,14 +88,14 @@ void Robot::update()
 {    
   word packet[packet_length];
 
-//  Serial.println("hello1");
   for(int i = 0; i < legs_active; i++) {
     packet[2*i] = legs[i].id;
 
-    float actual_p = Dxl->readWord(legs[i].id, PRESENT_POS);
-//    if (legs[i].id == 1) Serial.println(actual_p);
+//    Serial.println("before getpos");
+    int actual_p = Dxl->getPosition(legs[i].id);
+//    Serial.println("after getpos");
     float actual_theta = P_to_Theta(actual_p); // converted to degrees, relative to leg
-    float actual_vel = dynV_to_V(Dxl->readWord(legs[i].id, PRESENT_SPEED)); // converted to degrees/ms, relative to leg
+    float actual_vel = dynV_to_V(Dxl->getSpeed(legs[i].id)); // converted to degrees/ms, relative to leg
 
     if (!legs[i].deadzone) {
       if (actual_p == 0 || actual_p == 1023) { // entering deadzone
@@ -135,8 +134,7 @@ void Robot::update()
         actual_theta = actual_theta - legs[i].zero;
         control_signal = pd_calc(actual_theta, desired_theta, actual_vel, desired_vel, legs[i].kp, legs[i].kd);
       }
-      int new_vel = V_to_dynV(actual_vel + control_signal);
-      packet[2*i + 1] = new_vel;
+      packet[2*i + 1] = V_to_dynV(actual_vel + control_signal);
     }
     else { // deadzone
       if ((actual_p > 0) && (actual_p < dead_buffer) || (actual_p < 1023) && (actual_p > 1023 - dead_buffer)) { // exiting deadzone
@@ -146,16 +144,38 @@ void Robot::update()
       packet[2*i + 1] = V_to_dynV(signed_recovery_speed);
     }
   }
-  
-  Serial.print("[ ");
-  for (int i = 0; i < packet_length; i++) {
-    Serial.print(packet[i]);
-    Serial.print(" ");
-  }
-  Serial.print("]");
-  Serial.println();
+
+//  Serial.print("[ ");
+//  for (int i = 0; i < packet_length; i++) {
+//    Serial.print(packet[i]);
+//    Serial.print(" ");
+//  }
+//  Serial.print("]");
+//  Serial.println();
   
   Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length); //simultaneously write to each of 6 servoes with updated commands
+}
+
+void Robot::test() {
+  word packet[packet_length];
+
+  for(int i = 0; i < legs_active; i++) {
+    Serial.println(Dxl->getPosition(legs[i].id));
+    packet[2*i] = legs[i].id;
+    packet[2*i+1] = 1023;
+  }
+  Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length);
+
+  delay (1000);
+  
+  for(int i = 0; i < legs_active; i++) {
+    Serial.println(Dxl->getPosition(legs[i].id));
+    packet[2*i] = legs[i].id;
+    packet[2*i+1] = 0;
+  }
+  Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length);
+
+  delay(2000);
 }
 
 void Robot::checkForBT() 
@@ -206,8 +226,8 @@ void Robot::checkForBT()
 void Robot::printServoPositions() 
 {
   for (int i = 0; i < legs_active; i++) {
-    Serial.print(i);
+    Serial.print(legs[i].id);
     Serial.print(": ");
-    Serial.println(P_to_Theta(Dxl->readWord(i, PRESENT_POS)));
+    Serial.println(Dxl->getPosition(legs[i].id));
   }
 }

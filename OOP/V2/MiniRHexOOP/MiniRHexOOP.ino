@@ -16,7 +16,7 @@ void handle_button_press() {
   if (button_state > last_button_state) {
     digitalWrite(BOARD_LED_PIN, LOW); // turn led on
     int new_gait_idx = MiniRHex.incrementGait(); // change to next gait
-    Serial.println(new_gait_idx);
+//    Serial.println(new_gait_idx);
   }
   else if (button_state < last_button_state) {
     digitalWrite(BOARD_LED_PIN, HIGH); // turn led off
@@ -46,6 +46,7 @@ void loop() {
   if (millis() - u_t > 10) {
     u_t = millis();
     MiniRHex.update();
+//    MiniRHex.printServoPositions();
   }
 //  MiniRHex.checkForBT();
 }

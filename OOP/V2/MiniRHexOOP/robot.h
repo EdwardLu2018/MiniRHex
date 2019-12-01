@@ -16,11 +16,11 @@ class Robot
 {
     public:
         // Dynamixel Object
-        Dynamixel * Dxl;
+        Dynamixel *Dxl;
 
         unsigned char gait_idx;
 
-        Robot(Dynamixel * dxl);
+        Robot(Dynamixel *dxl);
         ~Robot() {};
         void startup();
         unsigned short checkBattery();
@@ -32,6 +32,7 @@ class Robot
         void checkForBT();
         void printServoPositions();
         void stand();
+        void test();
 
     private:
         // Deadzone
