@@ -3,11 +3,13 @@
 #include "gait.h"
 #include "conversions.h"
 
-Leg::Leg(unsigned char set_id, unsigned char set_idx,
+Leg::Leg(unsigned char set_id, unsigned char set_idx, int pos, int vel,
          float set_desired_theta, Gait set_gait,
          float set_zero, bool set_right_side,
          bool set_deadzone, bool set_dead_from_neg)
 {
+  position = pos;
+  velocity = vel;
   id = set_id;
   idx = set_idx;
   desired_theta = set_desired_theta;

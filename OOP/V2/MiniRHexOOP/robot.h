@@ -56,6 +56,7 @@ class Robot
         float pd_calc(float theta_act, float theta_des,
                       float v_act, float v_des,
                       float kp, float kd);
+        void update_leg_params();
 };
 
 #endif

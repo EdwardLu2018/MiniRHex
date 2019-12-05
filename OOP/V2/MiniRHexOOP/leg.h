@@ -34,8 +34,11 @@ class Leg
     float global_theta;
     float global_velocity;
 
+    int position;
+    int velocity;
+
     Leg() {};
-    Leg(unsigned char set_id, unsigned char set_idx,
+    Leg(unsigned char set_id, unsigned char set_idx, int pos, int vel,
         float set_desired_theta, Gait set_gait,
         float set_zero, bool set_right_side,
         bool set_deadzone, bool set_dead_from_neg);

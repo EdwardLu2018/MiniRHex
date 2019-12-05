@@ -6,12 +6,12 @@ Robot::Robot(Dynamixel * dxl) : Dxl(dxl)
   legs_active = 6;
   packet_length = 2*legs_active;
 
-  legs[0] = Leg(1, 0, 0, stand_gait, 0, false, false, false);
-  legs[1] = Leg(2, 1, 0, stand_gait, 0, false, false, false);
-  legs[2] = Leg(3, 2, 0, stand_gait, 0, false, false, false);
-  legs[3] = Leg(4, 3, 0, stand_gait, 0,  true, false, false);
-  legs[4] = Leg(5, 4, 0, stand_gait, 0,  true, false, false);
-  legs[5] = Leg(6, 5, 0, stand_gait, 0,  true, false, false);
+  legs[0] = Leg(1, 0, 0, 0, 0, stand_gait, 0, false, false, false);
+  legs[1] = Leg(2, 1, 0, 0, 0, stand_gait, 0, false, false, false);
+  legs[2] = Leg(3, 2, 0, 0, 0, stand_gait, 0, false, false, false);
+  legs[3] = Leg(4, 3, 0, 0, 0, stand_gait, 0,  true, false, false);
+  legs[4] = Leg(5, 4, 0, 0, 0, stand_gait, 0,  true, false, false);
+  legs[5] = Leg(6, 5, 0, 0, 0, stand_gait, 0,  true, false, false);
 }
 
 void Robot::startup() 
@@ -84,18 +84,30 @@ float Robot::pd_calc(float theta_act, float theta_des,
   return kp * dtheta + kd * dv;
 }
 
+void Robot::update_leg_params() 
+{
+  for(int i = 0; i < legs_active; i++) {
+    Serial.print("before getpos ");
+    Serial.println(legs[i].deadzone);
+    int pos = Dxl->getPosition(legs[i].id);
+    if (pos != 65535) legs[i].position = pos;
+    Serial.print("after getpos: ");
+    Serial.println(legs[i].position);
+    legs[i].velocity = Dxl->getSpeed(legs[i].id);
+  }
+}
+
 void Robot::update() 
-{    
+{
+  update_leg_params();
   word packet[packet_length];
 
   for(int i = 0; i < legs_active; i++) {
     packet[2*i] = legs[i].id;
 
-//    Serial.println("before getpos");
-    int actual_p = Dxl->getPosition(legs[i].id);
-//    Serial.println("after getpos");
+    int actual_p = legs[i].position;
     float actual_theta = P_to_Theta(actual_p); // converted to degrees, relative to leg
-    float actual_vel = dynV_to_V(Dxl->getSpeed(legs[i].id)); // converted to degrees/ms, relative to leg
+    float actual_vel = dynV_to_V(legs[i].velocity); // converted to degrees/ms, relative to leg
 
     if (!legs[i].deadzone) {
       if (actual_p == 0 || actual_p == 1023) { // entering deadzone
