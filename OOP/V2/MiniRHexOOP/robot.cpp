@@ -35,6 +35,9 @@ int Robot::updateGait(Gait gait)
   for(int i = 0; i < legs_active; i++) {
     legs[i].updateGait(gait, t_start);
   }
+  int packet[] = {1,0,2,0,3,0,4,0,5,0,6,0};
+  Dxl->syncWrite(30, 1, packet, packet_length);
+  delay(100);
   return gait_idx;
 }
 
@@ -87,12 +90,12 @@ float Robot::pd_calc(float theta_act, float theta_des,
 void Robot::update_leg_params() 
 {
   for(int i = 0; i < legs_active; i++) {
-    Serial.print("before getpos ");
-    Serial.println(legs[i].deadzone);
+//    Serial.print("before getpos ");
+//    Serial.println(legs[i].deadzone);
     int pos = Dxl->getPosition(legs[i].id);
     if (pos != 65535) legs[i].position = pos;
-    Serial.print("after getpos: ");
-    Serial.println(legs[i].position);
+//    Serial.print("after getpos: ");
+//    Serial.println(legs[i].position);
     legs[i].velocity = Dxl->getSpeed(legs[i].id);
   }
 }
