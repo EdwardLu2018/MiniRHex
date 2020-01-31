@@ -31,8 +31,6 @@ class Robot
         void update();
         void checkForBT();
         void printServoPositions();
-        void stand();
-        void test();
 
     private:
         // Deadzone

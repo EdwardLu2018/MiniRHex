@@ -59,13 +59,13 @@ unsigned short Robot::checkBattery()
   }
   else if (voltage < 7.1) { // red
     low_battery = 1;
+    Serial.println("Voltage Low!");
   }
   else {
     low_battery = 3; // yellow
   }
 
   if (prev_low_battery != low_battery) {
-    Serial.println("Voltage Low!");
     for (int i = 0; i < legs_active; i++) {
       Dxl->writeByte(legs[i].id, LED, low_battery);
     }
@@ -90,12 +90,8 @@ float Robot::pd_calc(float theta_act, float theta_des,
 void Robot::update_leg_params() 
 {
   for(int i = 0; i < legs_active; i++) {
-//    Serial.print("before getpos ");
-//    Serial.println(legs[i].deadzone);
     int pos = Dxl->getPosition(legs[i].id);
     if (pos != 65535) legs[i].position = pos;
-//    Serial.print("after getpos: ");
-//    Serial.println(legs[i].position);
     legs[i].velocity = Dxl->getSpeed(legs[i].id);
   }
 }
@@ -169,28 +165,6 @@ void Robot::update()
 //  Serial.println();
   
   Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length); //simultaneously write to each of 6 servoes with updated commands
-}
-
-void Robot::test() {
-  word packet[packet_length];
-
-  for(int i = 0; i < legs_active; i++) {
-    Serial.println(Dxl->getPosition(legs[i].id));
-    packet[2*i] = legs[i].id;
-    packet[2*i+1] = 1023;
-  }
-  Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length);
-
-  delay (1000);
-  
-  for(int i = 0; i < legs_active; i++) {
-    Serial.println(Dxl->getPosition(legs[i].id));
-    packet[2*i] = legs[i].id;
-    packet[2*i+1] = 0;
-  }
-  Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length);
-
-  delay(2000);
 }
 
 void Robot::checkForBT() 
