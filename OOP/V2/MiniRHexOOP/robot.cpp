@@ -155,14 +155,6 @@ void Robot::update()
       packet[2*i + 1] = V_to_dynV(signed_recovery_speed);
     }
   }
-
-//  Serial.print("[ ");
-//  for (int i = 0; i < packet_length; i++) {
-//    Serial.print(packet[i]);
-//    Serial.print(" ");
-//  }
-//  Serial.print("]");
-//  Serial.println();
   
   Dxl->syncWrite(MOVING_SPEED, 1, packet, packet_length); //simultaneously write to each of 6 servoes with updated commands
 }
@@ -205,7 +197,6 @@ void Robot::checkForBT()
     }
 
     if (bt_gait_idx != -1) {
-      int t_start = millis();
       gait_idx = bt_gait_idx;
       updateGait(gait_order[gait_idx]);
     }

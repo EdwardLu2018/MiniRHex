@@ -15,12 +15,9 @@ unsigned long button_t = millis();
 void handle_button_press() {
   button_state = digitalRead(BOARD_BUTTON_PIN);
   if (button_state > last_button_state) {
-//    if (millis() - button_t > 500) {
       button_t = millis();
       digitalWrite(BOARD_LED_PIN, LOW); // turn led on
       int new_gait_idx = MiniRHex.incrementGait(); // change to next gait
-//    }
-//    Serial.println(new_gait_idx);
   }
   else if (button_state < last_button_state) {
     digitalWrite(BOARD_LED_PIN, HIGH); // turn led off
@@ -43,8 +40,8 @@ void loop() {
     MiniRHex.checkBattery();
   }
   MiniRHex.update();
-//  MiniRHex.checkForBT();
-//  Serial.println(MiniRHex.Dxl->available());
+  MiniRHex.checkForBT();
+
   // button control //
   handle_button_press();
 }
