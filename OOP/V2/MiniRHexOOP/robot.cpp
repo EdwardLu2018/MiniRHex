@@ -164,21 +164,30 @@ void Robot::checkForBT()
   // bluetooth control
   if (Serial2.available()) {
     char a = (char)(Serial2.read());
+
+    if (0x30 <= a && a <= 0x77) {
     Serial.println(a);
+    
     unsigned char bt_gait_idx = -1;
+
     switch (a) {
+    case '0':
     case 'q':
       bt_gait_idx = 0;
       break; //stand
+    case '5':
     case 'w':
       bt_gait_idx = 1;
       break; //forwards
+    case '6':
     case 's':
       bt_gait_idx = 2;
       break; //reverse
+    case '7':
     case 'a':
       bt_gait_idx = 3;
       break; //left
+    case '8':
     case 'd':
       bt_gait_idx = 4;
       break; //right
@@ -188,17 +197,14 @@ void Robot::checkForBT()
     default:
       bt_gait_idx = 0;
       break; //stand
-//    case 'x':
-//      jumpReady();
-//      break;
-//    case 'j':
-//      jump();
-//      break;
     }
-
-    if (bt_gait_idx != -1) {
+   
+    Serial.print("b: ");
+    Serial.println(bt_gait_idx);
+    if (bt_gait_idx != -1 && a != '1') {
       gait_idx = bt_gait_idx;
       updateGait(gait_order[gait_idx]);
+    }
     }
   }
 }

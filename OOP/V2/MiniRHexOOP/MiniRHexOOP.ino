@@ -39,9 +39,9 @@ void loop() {
     t = millis();
     MiniRHex.checkBattery();
   }
-  MiniRHex.update();
-  MiniRHex.checkForBT();
-
   // button control //
   handle_button_press();
+  
+  MiniRHex.update();
+  MiniRHex.checkForBT();
 }
